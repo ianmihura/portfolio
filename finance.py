@@ -2,6 +2,19 @@ import numpy as np
 from scipy import optimize
 
 
+def ln_return(S: np.ndarray):
+    """Calculate Natural Log return of a price list
+
+    Parameters:
+    S : Asset prices array
+
+    Returns:
+    ndarray : Log Return array
+    """
+
+    return np.apply_along_axis(lambda x: np.log(x[1]/x[0]), 1, list(zip(S[1:], S[:-1])))
+
+
 def standard_deviation_p(w: np.ndarray, cov: np.ndarray):
     """Calculate portfolio standard deviation (sigma-p)
     
