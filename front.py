@@ -4,7 +4,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from analysis import Portfolio_Analysis
-from file_io import IO
+import file_io as IO
 import finance
 
 p = IO.read_portfolio()
@@ -23,6 +23,9 @@ st.bar_chart(a.df_meta['coins_per'])
 
 st.title('Metadata')
 st.write(a.df_meta)
+
+st.title('Data')
+st.write(a.df)
 
 st.title('Correlation matrix')
 st.write(a.df_correl_matrix)

@@ -31,7 +31,7 @@ class Portfolio_Analysis:
         self.set_crypto_results()
 
         # Other assets data
-        self.set_assets_results()
+        # self.set_assets_results()
 
         # Make DataFrames
         self.set_base_df()
@@ -52,28 +52,26 @@ class Portfolio_Analysis:
     def correct_asset_time(self, x):
         return int(datetime.timestamp(datetime.strptime(x[2:], '%y-%m-%d')))
 
-    def get_df_cols(self, asset):
-        return [self.COL_TIMESTAMP, self.COL_PRICE_PREFIX + asset, self.COL_RETURN_PREFIX + asset]
-
     def set_crypto_results(self):
         for coin in self.portfolio['crypto']:
-            current_coin = IO.read_asset(coin)['prices']
+            data = IO.read_asset(coin)
 
-            timestamps = np.flip(np.apply_along_axis(self.correct_crypto_time, 1, current_coin))
-            prices = np.flip(np.apply_along_axis(lambda x: x[1], 1, current_coin))
+            timestamps = [*map(lambda x: datetime.fromtimestamp(x[0]), data)]
+            prices = [*map(lambda x: x[1], data)]
             ln_return = finance.ln_return(prices)
 
-            self.results[coin] = pd.DataFrame(zip(timestamps, prices, ln_return), columns = self.get_df_cols(coin))
+            cols = [self.COL_TIMESTAMP, self.COL_PRICE_PREFIX + coin, self.COL_RETURN_PREFIX + coin]
+            self.results[coin] = pd.DataFrame(zip(timestamps, prices, ln_return), columns=cols)
 
-    def set_assets_results(self):
-        for asset in self.portfolio['asset']:
-            current_asset = IO.read_asset(asset)['Time Series (Daily)']
+    # def set_assets_results(self):
+    #     for asset in self.portfolio['asset']:
+    #         current_asset = IO.read_asset(asset)['Time Series (Daily)']
         
-            timestamps = np.array([*map(self.correct_asset_time, current_asset)])
-            prices = np.array([*map(lambda x: current_asset[x]['4. close'], current_asset)]).astype(np.float)
-            ln_return = finance.ln_return(prices)
+    #         timestamps = np.array([*map(self.correct_asset_time, current_asset)])
+    #         prices = np.array([*map(lambda x: current_asset[x]['4. close'], current_asset)]).astype(np.float)
+    #         ln_return = finance.ln_return(prices)
         
-            self.results[asset] = pd.DataFrame(zip(timestamps, prices, ln_return), columns = self.get_df_cols(asset))
+    #         self.results[asset] = pd.DataFrame(zip(timestamps, prices, ln_return), columns = self.get_df_cols(asset))
 
     def set_base_df(self):
         self.coins = [coin for coin in self.portfolio['crypto']]
@@ -92,12 +90,13 @@ class Portfolio_Analysis:
         coins_native = [self.portfolio['crypto'][coin]['native'] for coin in self.coins]
         coins_usd = [coins_native[i] * self.df[self.COL_PRICE_PREFIX + coin][0] for i, coin in enumerate(self.coins)]
         coins_per = coins_usd / np.sum(coins_usd)
+        coins_last_close = [self.df[self.COL_PRICE_PREFIX + coin][0] for coin in self.coins]
 
         std = self.df_return.std()
         mean = self.df_return.mean()
         # mean absolute deviation = 1/N Sum( |xi − m(X)| )
         absolute_deviation = abs(self.df.filter(regex='excess_ret_')).sum() / self.df.count()[0]
 
-        data = [coins_native, coins_usd, coins_per, std, mean, absolute_deviation]
-        cols = ['coins_native', 'coins_usd', 'coins_per', 'return_std', 'return_mean', 'absolute_deviation']
+        data = [coins_native, coins_last_close, coins_usd, coins_per, std, mean, absolute_deviation]
+        cols = ['coins_native', 'coins_last_close', 'coins_usd', 'coins_per', 'return_std', 'return_mean', 'absolute_deviation']
         self.df_meta = pd.DataFrame(data, cols, self.coins).T

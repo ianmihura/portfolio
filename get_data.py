@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from datetime import datetime
 import requests
 import file_io as IO
+import json
 
 load_dotenv()
 PORTFOLIO = 'portfolio.json'
@@ -30,7 +31,9 @@ def format_crypto(jraw):
     data = jraw['prices']
     timestamps = [*map(correct_crypto_time, data)]
     prices = [*map(lambda x: x[1], data)]
-    return [*zip(timestamps, prices)].reverse()
+    z_data = [*zip(timestamps, prices)]
+    z_data.reverse()
+    return z_data
 
 
 def main():
@@ -42,6 +45,8 @@ def main():
         raw = requests.get(api_url)
         data = format_crypto(raw.json())
         IO.save_asset(coin, data)
+        
+        print(coin, ' -- Query successful')
     
     # loop assets
 
