@@ -44,7 +44,7 @@ def mean_return_p(w: np.ndarray, r: np.ndarray):
     return (w * r).sum()
 
 
-def sharper_ratio(Er: float, std: float, Rf=0.01):
+def sharper_ratio(Er: float, std: float, Rf=0.03):
     """Calculate sharper ratio (slope of the market line)
     
     Parameters:
