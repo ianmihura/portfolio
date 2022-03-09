@@ -12,6 +12,7 @@ def ln_return(S: np.ndarray):
     ndarray : Log Return array
     """
 
+    # return np.apply_along_axis(lambda x: 1-(x[0]/x[1]), 1, list(zip(S[1:], S[:-1])))
     return np.apply_along_axis(lambda x: np.log(x[1]/x[0]), 1, list(zip(S[1:], S[:-1])))
 
 

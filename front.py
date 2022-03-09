@@ -20,13 +20,18 @@ fig, ax = plt.subplots()
 plt.scatter(a.df_meta['return_std'], a.df_meta['return_mean'])
 plt.scatter(a.standard_deviation_p, a.mean_return_p)
 ax.annotate('P', (a.standard_deviation_p, a.mean_return_p))
-for i, text in enumerate(a.coins):
+for i, text in enumerate(a.assets):
     ax.annotate(text, (a.df_meta['return_std'][i], a.df_meta['return_mean'][i]))
 ax.set_xlabel('standard deviation')
 ax.set_ylabel('mean return')
 
+st.line_chart(a.df['return_btc'])
+st.write(a.df['return_btc'].sum())
+st.write(a.df['price_btc'][0])
+st.write(a.df['price_btc'].iloc[-1])
+
 st.title('Portfolio')
-st.bar_chart(a.df_meta['coins_per'])
+st.bar_chart(a.df_meta['assets_per'])
 
 st.title('Metadata')
 st.write(a.df_meta)
@@ -37,14 +42,13 @@ st.write(a.df)
 st.title('Correlation matrix')
 st.write(a.df_correl_matrix)
 st.title('Optimization')
-(res, sharper) = finance.optimize_p(a.df_meta['coins_per'], a.df_meta['return_mean'], a.df_covar_matrix)
-st.write('Optimized portfolio', pd.DataFrame(zip(res, a.df_meta['coins_per']), index=a.coins, columns=['new', 'old']))
+(res, sharper) = finance.optimize_p(a.df_meta['assets_per'], a.df_meta['return_mean'], a.df_covar_matrix)
+st.write('Optimized portfolio', pd.DataFrame(zip(res, a.df_meta['assets_per']), index=a.assets, columns=['new', 'old']))
 st.write(pd.DataFrame((sharper, a.sharper_ratio), index=['new','old'], columns=['Sharper ratio']))
 op_std = finance.standard_deviation_p(res, a.df_covar_matrix)
 op_mean = finance.mean_return_p(res, a.df_meta['return_mean'])
 st.write(pd.DataFrame((op_mean, a.mean_return_p), index=['new','old'], columns=['Mean return']))
 st.write(pd.DataFrame((op_std, a.standard_deviation_p), index=['new','old'], columns=['Standard deviation']))
-
 
 plt.scatter(op_std, op_mean)
 ax.annotate('*P', (op_std, op_mean))
