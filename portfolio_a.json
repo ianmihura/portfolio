@@ -1,0 +1,7 @@
+{
+    "msft": {
+        "type": "equity",
+        "api_id": "MSFT",
+        "native": 0.0
+    }
+}

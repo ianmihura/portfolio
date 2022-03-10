@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 from matplotlib import pyplot as plt
 
 from analysis import Portfolio_Analysis
@@ -12,7 +11,6 @@ st.set_page_config(
     page_icon="chart_with_upwards_trend"
 )
 
-print('\n')
 p = IO.read_portfolio()
 a = Portfolio_Analysis(p)
 
@@ -24,11 +22,6 @@ for i, text in enumerate(a.assets):
     ax.annotate(text, (a.df_meta['return_std'][i], a.df_meta['return_mean'][i]))
 ax.set_xlabel('standard deviation')
 ax.set_ylabel('mean return')
-
-st.line_chart(a.df['return_btc'])
-st.write(a.df['return_btc'].sum())
-st.write(a.df['price_btc'][0])
-st.write(a.df['price_btc'].iloc[-1])
 
 st.title('Portfolio')
 st.bar_chart(a.df_meta['assets_per'])

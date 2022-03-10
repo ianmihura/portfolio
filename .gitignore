@@ -1,5 +1,6 @@
 .env
 portfolio.json
+portfolio_g.json
 __pycache__
 node_modules
 TODO

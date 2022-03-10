@@ -1,13 +1,12 @@
 from os import environ as env
 from dotenv import load_dotenv
+load_dotenv()
 from datetime import datetime
 import requests
 import file_io as IO
-import json
 
-load_dotenv()
-PORTFOLIO = 'portfolio.json'
 
+# APIs
 def get_api_coingecko(symbol, vs_currency):
     return f'https://api.coingecko.com/api/v3/coins/{symbol}/market_chart/range?vs_currency={vs_currency}&from=1609415616&to=2590526525'
 
@@ -17,6 +16,23 @@ def get_api_vantage(symbol):
 def get_api_polygon_financials(symbol):
     return f'https://api.polygon.io/vX/reference/financials?ticker={symbol}&apiKey={env["POLYGON_API_KEY"]}'
 
+def get_api_polygon_tickers():
+    return f'https://api.polygon.io/v3/reference/tickers?active=true&sort=ticker&order=asc&apiKey={env["POLYGON_API_KEY"]}'
+
+def get_api_polygon_metadata(symbol):
+    return f'https://api.polygon.io/v3/reference/tickers/{symbol}?apiKey={env["POLYGON_API_KEY"]}'
+
+def get_api_yahoo_market():
+    return f'https://yfapi.net/v6/finance/quote/marketSummary?lang=en&region=US'
+
+def get_api_yahoo_recommendations(symbol):
+    return f'https://yfapi.net/v6/finance/recommendationsbysymbol/{symbol}'
+
+def get_api_yahoo_metadata(symbol):
+    return f'https://yfapi.net/v11/finance/quoteSummary/{symbol}?lang=en&modules=defaultKeyStatistics%2CassetProfile%2CsummaryDetail%2CfinancialData%20%2CfundProfile'
+
+
+# Formatting raw input
 # Vantage finance API. origin: 2022-02-24
 def correct_vantage_time(x):
     return int(datetime.timestamp(datetime.strptime(x[2:], '%y-%m-%d')))
@@ -40,6 +56,29 @@ def format_vantage(jraw):
     z_data = [*zip(timestamps, prices)]
     return z_data
 
+
+# Interface to save data
+def save_market():
+    api_url = get_api_yahoo_market()
+    raw = requests.get(api_url, headers={"x-api-key": env['YAHOO_API_KEY']})
+
+    IO.save_asset('market', raw.json())
+    print('Market data -- Query successful')
+
+def save_asset_metadata(asset, asset_api_id):
+    api_url = get_api_yahoo_metadata(asset_api_id)
+    raw = requests.get(api_url, headers={"x-api-key": env['YAHOO_API_KEY']})
+
+    IO.save_asset(f'{asset}.meta', raw.json())
+    print(asset, '-- Metadata -- Query successful')
+
+def save_asset_recommend(asset, asset_api_id):
+    api_url = get_api_yahoo_recommendations(asset_api_id)
+    raw = requests.get(api_url, headers={"x-api-key": env['YAHOO_API_KEY']})
+
+    IO.save_asset(f'{asset}.rec', raw.json())
+    print(asset, '-- Recommendations -- Query successful')
+
 def save_asset(asset, asset_api_id, type):
     if type == 'crypto':
         api_url = get_api_coingecko(asset_api_id, 'usd')
@@ -50,14 +89,18 @@ def save_asset(asset, asset_api_id, type):
         raw = requests.get(api_url)
         data = format_vantage(raw.json())
 
-    IO.save_asset(asset, data)
-    print(asset, '-- Query successful')
+    IO.save_asset({asset}, data)
+    print(asset, '-- Price -- Query successful')
 
+
+# Main
 def main():
     portfolio = IO.read_portfolio()
     for asset in portfolio:
         asset_data = portfolio[asset]
-        save_asset(asset, asset_data['api_id'], asset_data['type'])
+        # save_asset(asset, asset_data['api_id'], asset_data['type'])
+        # save_asset_metadata(asset, asset_data['api_id'])
+    save_market()
 
 if __name__ == '__main__':
     main()

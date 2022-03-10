@@ -1,6 +1,6 @@
 import json
 
-PORTFOLIO = 'portfolio.json'
+PORTFOLIO = 'portfolio_a.json'
 DATA_ROUTE = './data/'
 
 def read_portfolio():
@@ -15,12 +15,12 @@ def save_portfolio(new_portfolio):
     f.close()
 
 def read_asset(asset):
-    f = open(DATA_ROUTE + asset, 'r')
+    f = open(f'{DATA_ROUTE}{asset}.json', 'r')
     current_asset = json.load(f)
     f.close()
     return current_asset
 
 def save_asset(asset_key, asset_data):
-    f = open(DATA_ROUTE + asset_key, 'w')
+    f = open(f'{DATA_ROUTE}{asset_key}.json', 'w')
     json.dump(asset_data, f)
     f.close()

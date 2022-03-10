@@ -43,19 +43,13 @@ class Portfolio_Analysis:
         self.standard_deviation_p = finance.standard_deviation_p(self.df_meta['assets_per'], self.df_covar_matrix)
         self.sharper_ratio = finance.sharper_ratio(self.mean_return_p, self.standard_deviation_p)
 
-    # Vantage finance API. origin: 2022-02-24
-    def correct_asset_time(self, x):
-        return int(datetime.timestamp(datetime.strptime(x[2:], '%y-%m-%d')))
-
     def set_base_df(self):
         self.assets = [asset for asset in self.portfolio]
 
         for asset in self.assets:
             data = IO.read_asset(asset)
-
             timestamps = [*map(lambda x: datetime.fromtimestamp(x[0]), data)]
             prices = [*map(lambda x: x[1], data)]
-
             cols = [self.COL_TIMESTAMP, self.COL_PRICE_PREFIX + asset]
             self.raw_results[asset] = pd.DataFrame(zip(timestamps, prices), columns=cols)
 
@@ -64,9 +58,11 @@ class Portfolio_Analysis:
             else: 
                 self.df = self.df.merge(self.raw_results[asset], on=self.COL_TIMESTAMP, how='inner')
 
+        for asset in self.assets:
             ln_return = finance.ln_return(self.df[self.COL_PRICE_PREFIX + asset])
-            self.df = self.df[:-1]
-            self.df[self.COL_RETURN_PREFIX + asset] = ln_return
+            self.df[self.COL_RETURN_PREFIX + asset] = pd.Series(ln_return)
+        
+        self.df = self.df[:-1]
 
         self.df_return = self.df.filter(regex=self.COL_RETURN_PREFIX)
         self.df = self.df.join((self.df_return - self.df_return.mean()).rename(columns=dict(
