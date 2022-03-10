@@ -3,5 +3,115 @@
         "type": "equity",
         "api_id": "MSFT",
         "native": 0.0
+    },
+    "nike": {
+        "type": "equity",
+        "api_id": "NIKE",
+        "native": 0.0
+    },
+    "nvda": {
+        "type": "equity",
+        "api_id": "NVDA",
+        "native": 0.0
+    },
+    "pltr": {
+        "type": "equity",
+        "api_id": "PLTR",
+        "native": 0.0
+    },
+    "ktos": {
+        "type": "equity",
+        "api_id": "KTOS",
+        "native": 0.0
+    },
+    "fb": {
+        "type": "equity",
+        "api_id": "FB",
+        "native": 0.0
+    },
+    "totzf": {
+        "type": "equity",
+        "api_id": "TOTZF",
+        "native": 0.0
+    },
+    "gxo": {
+        "type": "equity",
+        "api_id": "GXO",
+        "native": 0.0
+    },
+    "tsm": {
+        "type": "equity",
+        "api_id": "TSM",
+        "native": 0.0
+    },
+    "mchp": {
+        "type": "equity",
+        "api_id": "MCHP",
+        "native": 0.0
+    },
+    "freyr": {
+        "type": "equity",
+        "api_id": "FREYR",
+        "native": 0.0
+    },
+    "ccj": {
+        "type": "equity",
+        "api_id": "CCJ",
+        "native": 0.0
+    },
+    "uuuu": {
+        "type": "equity",
+        "api_id": "UUUU",
+        "native": 0.0
+    },
+    "vff": {
+        "type": "equity",
+        "api_id": "VFF",
+        "native": 0.0
+    },
+    "tlry": {
+        "type": "equity",
+        "api_id": "TLRY",
+        "native": 0.0
+    },
+    "maps": {
+        "type": "equity",
+        "api_id": "MAPS",
+        "native": 0.0
+    },
+    "cgc": {
+        "type": "equity",
+        "api_id": "CGC",
+        "native": 0.0
+    },
+    "cgl": {
+        "type": "equity",
+        "api_id": "CGL.L",
+        "native": 0.0
+    },
+    "kap": {
+        "type": "equity",
+        "api_id": "KAP",
+        "native": 0.0
+    },
+    "gpk": {
+        "type": "equity",
+        "api_id": "GPK",
+        "native": 0.0
+    },
+    "rds-a": {
+        "type": "equity",
+        "api_id": "RDS-A",
+        "native": 0.0
+    },
+    "lng": {
+        "type": "equity",
+        "api_id": "LNG",
+        "native": 0.0
+    },
+    "fl": {
+        "type": "equity",
+        "api_id": "FL",
+        "native": 0.0
     }
 }

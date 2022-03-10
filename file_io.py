@@ -1,6 +1,6 @@
 import json
 
-PORTFOLIO = 'portfolio_a.json'
+PORTFOLIO = 'portfolio.json'
 DATA_ROUTE = './data/'
 
 def read_portfolio():

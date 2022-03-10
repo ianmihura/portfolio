@@ -59,47 +59,62 @@ def format_vantage(jraw):
 
 # Interface to save data
 def save_market():
-    api_url = get_api_yahoo_market()
-    raw = requests.get(api_url, headers={"x-api-key": env['YAHOO_API_KEY']})
+    try:
+        api_url = get_api_yahoo_market()
+        raw = requests.get(api_url, headers={"x-api-key": env['YAHOO_API_KEY']})
 
-    IO.save_asset('market', raw.json())
-    print('Market data -- Query successful')
+        IO.save_asset('market', raw.json())
+        print('Market data -- Query successful')
+    except:
+        print('Market data -- Query fail')
+        print(raw.json())
 
 def save_asset_metadata(asset, asset_api_id):
-    api_url = get_api_yahoo_metadata(asset_api_id)
-    raw = requests.get(api_url, headers={"x-api-key": env['YAHOO_API_KEY']})
+    try:
+        api_url = get_api_yahoo_metadata(asset_api_id)
+        raw = requests.get(api_url, headers={"x-api-key": env['YAHOO_API_KEY']})
 
-    IO.save_asset(f'{asset}.meta', raw.json())
-    print(asset, '-- Metadata -- Query successful')
+        IO.save_asset(f'{asset}.meta', raw.json())
+        print(asset, '-- Metadata -- Query successful')
+    except:
+        print(asset, '-- Metadata -- Query fail')
+        print(raw.json())
 
 def save_asset_recommend(asset, asset_api_id):
-    api_url = get_api_yahoo_recommendations(asset_api_id)
-    raw = requests.get(api_url, headers={"x-api-key": env['YAHOO_API_KEY']})
+    try:
+        api_url = get_api_yahoo_recommendations(asset_api_id)
+        raw = requests.get(api_url, headers={"x-api-key": env['YAHOO_API_KEY']})
 
-    IO.save_asset(f'{asset}.rec', raw.json())
-    print(asset, '-- Recommendations -- Query successful')
+        IO.save_asset(f'{asset}.rec', raw.json())
+        print(asset, '-- Recommendations -- Query successful')
+    except:
+        print(asset, '-- Recommendations -- Query fail')
+        print(raw.json())
+
 
 def save_asset(asset, asset_api_id, type):
-    if type == 'crypto':
-        api_url = get_api_coingecko(asset_api_id, 'usd')
-        raw = requests.get(api_url)
-        data = format_coingecko(raw.json())
-    elif type == 'equity':
-        api_url = get_api_vantage(asset_api_id)
-        raw = requests.get(api_url)
-        data = format_vantage(raw.json())
-
-    IO.save_asset({asset}, data)
-    print(asset, '-- Price -- Query successful')
-
+    try:
+        if type == 'crypto':
+            api_url = get_api_coingecko(asset_api_id, 'usd')
+            raw = requests.get(api_url)
+            data = format_coingecko(raw.json())
+        elif type == 'equity':
+            api_url = get_api_vantage(asset_api_id)
+            raw = requests.get(api_url)
+            data = format_vantage(raw.json())
+        IO.save_asset(asset, data)
+        print(asset, '-- Price -- Query successful')
+    except:
+        print(asset, '-- Price -- Query fail')
+        print(raw.json())
 
 # Main
 def main():
     portfolio = IO.read_portfolio()
     for asset in portfolio:
         asset_data = portfolio[asset]
-        # save_asset(asset, asset_data['api_id'], asset_data['type'])
-        # save_asset_metadata(asset, asset_data['api_id'])
+        save_asset(asset, asset_data['api_id'], asset_data['type'])
+        save_asset_metadata(asset, asset_data['api_id'])
     save_market()
 
 if __name__ == '__main__':
