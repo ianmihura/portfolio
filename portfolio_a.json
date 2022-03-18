@@ -89,7 +89,7 @@
         "api_id": "CGL.L",
         "native": 0.0
     },
-    "kap": {
+    "_kap": {
         "type": "equity",
         "api_id": "KAP",
         "native": 0.0
