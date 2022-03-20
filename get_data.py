@@ -1,4 +1,3 @@
-from concurrent.futures import process
 from os import environ as env
 from dotenv import load_dotenv
 load_dotenv()
@@ -104,17 +103,14 @@ def save_asset(asset, asset_api_id, type):
             api_url = get_api_vantage(asset_api_id)
             raw = requests.get(api_url)
             data = format_vantage(raw.json())
-            
+
         IO.save_asset(asset, data)
         print(asset, '-- Price -- Query successful')
     except:
         print(asset, '-- Price -- Query fail')
         print(raw.json())
 
-def process_json(json):
-    if json:
-        IO.PORTFOLIO = json
-
+def process_json():
     portfolio = IO.read_portfolio()
     for asset in portfolio:
         asset_data = portfolio[asset]
@@ -122,18 +118,9 @@ def process_json(json):
         save_asset_metadata(asset, asset_data['api_id'])
     save_market()
 
-def process_asset(asset):
-    
-    return
-
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-j', '--json', type=str)
-    parser.add_argument('-a', '--asset', type=str)
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument('-j', '--json', type=str)
+    # args = parser.parse_args()
 
-    args = parser.parse_args()
-
-    if args.asset:
-        process_asset(args.asset)
-    else:
-        process_json(args.json)
+    process_json()

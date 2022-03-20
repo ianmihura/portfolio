@@ -12,19 +12,28 @@ class Portfolio_Analysis:
     COL_EXCESS_RETURN_PREFIX = 'excess_ret_'
 
     def __init__(self, portfolio = {}):
+        # Raw portfolio
         self.portfolio = portfolio
-        self.raw_results = {}
+        # Assets with actual data to analyse
         self.assets = []
+        # Timestamp - price array 
+        self.raw_results = {}
 
+        # Base df: temporal price data
         self.df = None
+        # Metadata df: processed results by coin
         self.df_meta = None
+        # Return df: returns by coin (for relation matrixes)
+        self.df_return = None
         self.df_correl_matrix = None
         self.df_covar_matrix = None
-        self.df_return = None
 
+        # Scalar values
         self.portfolio_mean_ret = 0
         self.portfolio_std = 0
+        self.sharper_ratio = 0
 
+        # Starts analysis
         self.analyse()
 
     def analyse(self):
@@ -55,7 +64,6 @@ class Portfolio_Analysis:
             cols = [self.COL_TIMESTAMP, self.COL_PRICE_PREFIX + asset]
             self.raw_results[asset] = pd.DataFrame(zip(timestamps, prices), columns=cols)
 
-            print(self.df)
             if self.df is None:
                 self.df = self.raw_results[asset]
             else: 

@@ -49,9 +49,9 @@
         "api_id": "MCHP",
         "native": 0.0
     },
-    "freyr": {
+    "frey": {
         "type": "equity",
-        "api_id": "FREYR",
+        "api_id": "FREY",
         "native": 0.0
     },
     "ccj": {
@@ -84,9 +84,9 @@
         "api_id": "CGC",
         "native": 0.0
     },
-    "cgl": {
+    "gcl": {
         "type": "equity",
-        "api_id": "CGL.L",
+        "api_id": "GCL.L",
         "native": 0.0
     },
     "_kap": {
