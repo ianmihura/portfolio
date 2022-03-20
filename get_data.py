@@ -5,32 +5,44 @@ from datetime import datetime
 import requests
 import file_io as IO
 import argparse
+from urllib.parse import quote
 
 
 # APIs
 def get_api_coingecko(symbol, vs_currency):
-    return f'https://api.coingecko.com/api/v3/coins/{symbol}/market_chart/range?vs_currency={vs_currency}&from=1609415616&to=2590526525'
+    s = quote(symbol)
+    v = quote(vs_currency)
+    return f'https://api.coingecko.com/api/v3/coins/{s}/market_chart/range?vs_currency={v}&from=1609415616&to=2590526525'
 
 def get_api_vantage(symbol):
-    return f'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&outputsize=full&apikey={env["VANTAGE_API_KEY"]}'
+    s = quote(symbol)
+    return f'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={s}&outputsize=full&apikey={env["VANTAGE_API_KEY"]}'
 
 def get_api_polygon_financials(symbol):
-    return f'https://api.polygon.io/vX/reference/financials?ticker={symbol}&apiKey={env["POLYGON_API_KEY"]}'
+    s = quote(symbol)
+    return f'https://api.polygon.io/vX/reference/financials?ticker={s}&apiKey={env["POLYGON_API_KEY"]}'
 
 def get_api_polygon_tickers():
     return f'https://api.polygon.io/v3/reference/tickers?active=true&sort=ticker&order=asc&apiKey={env["POLYGON_API_KEY"]}'
 
 def get_api_polygon_metadata(symbol):
-    return f'https://api.polygon.io/v3/reference/tickers/{symbol}?apiKey={env["POLYGON_API_KEY"]}'
+    s = quote(symbol)
+    return f'https://api.polygon.io/v3/reference/tickers/{s}?apiKey={env["POLYGON_API_KEY"]}'
+
+def get_api_yahoo(symbol):
+    s = quote(symbol)
+    return f'https://yfapi.net/v8/finance/chart/{s}?range=max&region=US&interval=1d&lang=en&events=div%2Csplit'
 
 def get_api_yahoo_market():
     return f'https://yfapi.net/v6/finance/quote/marketSummary?lang=en&region=US'
 
 def get_api_yahoo_recommendations(symbol):
-    return f'https://yfapi.net/v6/finance/recommendationsbysymbol/{symbol}'
+    s = quote(symbol)
+    return f'https://yfapi.net/v6/finance/recommendationsbysymbol/{s}'
 
 def get_api_yahoo_metadata(symbol):
-    return f'https://yfapi.net/v11/finance/quoteSummary/{symbol}?lang=en&modules=defaultKeyStatistics%2CassetProfile%2CsummaryDetail%2CfinancialData%20%2CfundProfile'
+    s = quote(symbol)
+    return f'https://yfapi.net/v11/finance/quoteSummary/{s}?lang=en&modules=defaultKeyStatistics%2CassetProfile%2CsummaryDetail%2CfinancialData%20%2CfundProfile'
 
 
 # Formatting raw input
@@ -55,6 +67,14 @@ def format_vantage(jraw):
     timestamps = [correct_vantage_time(x) for x in data]
     prices = [float(data[x]['4. close']) for x in data]
     z_data = [*zip(timestamps, prices)]
+    return z_data
+
+def format_yahoo(jraw):
+    data = jraw['chart']['result'][0]
+    timestamps = data['timestamp']
+    prices = data['indicators']['quote'][0]['close']
+    z_data = [*zip(timestamps, prices)]
+    print(z_data)
     return z_data
 
 
@@ -93,6 +113,7 @@ def save_asset_recommend(asset, asset_api_id):
         print(raw.json())
 
 
+# Main save asset: chooses what to do
 def save_asset(asset, asset_api_id, type):
     try:
         if type == 'crypto':
@@ -103,7 +124,12 @@ def save_asset(asset, asset_api_id, type):
             api_url = get_api_vantage(asset_api_id)
             raw = requests.get(api_url)
             data = format_vantage(raw.json())
-
+        elif type == 'index':
+            api_url = get_api_yahoo(asset_api_id)
+            raw = requests.get(api_url, headers={"x-api-key": env['YAHOO_API_KEY']})
+            data = format_yahoo(raw.json())
+            return data
+        
         IO.save_asset(asset, data)
         print(asset, '-- Price -- Query successful')
     except:
@@ -123,4 +149,5 @@ if __name__ == '__main__':
     # parser.add_argument('-j', '--json', type=str)
     # args = parser.parse_args()
 
-    process_json()
+    # process_json()
+    save_asset('sp','^GSPC','index')
